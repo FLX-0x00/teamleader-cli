@@ -1,0 +1,25 @@
+{
+  "name": "teamleader-cli",
+  "version": "1.0.0",
+  "description": "Non-interactive command line client for the Teamleader Focus API",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "bin": {
+    "tl": "src/cli.js",
+    "teamleader": "src/cli.js"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "test": "node --test 'test/**/*.test.js'"
+  },
+  "devDependencies": {
+    "@teamleader/focus-api-specification": "^1.165.0",
+    "yaml": "^2.5.0"
+  }
+}
