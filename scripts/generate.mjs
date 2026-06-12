@@ -118,10 +118,15 @@ for (const [path, methods] of Object.entries(doc.paths)) {
   for (const [method, op] of Object.entries(methods)) {
     if (!['get', 'post', 'put', 'patch', 'delete'].includes(method)) continue;
     const { resource, action } = cliNames(path);
-    const rawSchema = op.requestBody?.content?.['application/json']?.schema;
+    // content type may carry a charset suffix, e.g. "application/json;charset=utf-8"
+    const jsonKey = Object.keys(op.requestBody?.content || {}).find((k) =>
+      k.startsWith('application/json')
+    );
+    const content = jsonKey ? op.requestBody.content[jsonKey] : null;
+    const rawSchema = content?.schema;
     const schema = rawSchema ? simplify(rawSchema) : null;
     const example =
-      op.requestBody?.content?.['application/json']?.example ??
+      content?.example ??
       (rawSchema?.allOf || []).map((p) => p.example).find((e) => e) ??
       null;
     const responses = Object.keys(op.responses || {});

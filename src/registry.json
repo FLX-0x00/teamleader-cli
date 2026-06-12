@@ -5149,8 +5149,61 @@
    "deprecated": false,
    "destructive": false,
    "returnsContent": true,
-   "schema": null,
-   "example": null
+   "schema": {
+    "type": "object",
+    "properties": {
+     "filter": {
+      "type": "object",
+      "properties": {
+       "department_id": {
+        "type": "string",
+        "example": "a344c251-2494-0013-b433-ccee8e8435e5"
+       },
+       "document_type": {
+        "type": "string",
+        "enum": [
+         "delivery_note",
+         "invoice",
+         "order",
+         "order_confirmation",
+         "quotation",
+         "timetracking_report",
+         "workorder"
+        ],
+        "example": "invoice"
+       },
+       "status": {
+        "type": "array",
+        "description": "Filters on status:\n* `active`   - Filters on active departments\n* `archived` - Filters on archived departments",
+        "items": {
+         "type": "string",
+         "enum": [
+          "active",
+          "archived"
+         ]
+        }
+       }
+      },
+      "required": [
+       "department_id",
+       "document_type"
+      ]
+     }
+    },
+    "required": [
+     "filter"
+    ]
+   },
+   "example": {
+    "filter": {
+     "department_id": "a344c251-2494-0013-b433-ccee8e8435e5",
+     "document_type": "invoice",
+     "status": [
+      "active",
+      "archived"
+     ]
+    }
+   }
   },
   {
    "path": "/emailTracking.create",
@@ -5235,8 +5288,72 @@
    "deprecated": false,
    "destructive": false,
    "returnsContent": true,
-   "schema": null,
-   "example": null
+   "schema": {
+    "type": "object",
+    "properties": {
+     "filter": {
+      "type": "object",
+      "properties": {
+       "subject": {
+        "type": "object",
+        "properties": {
+         "id": {
+          "type": "string",
+          "example": "eab232c6-49b2-4b7e-a977-5e1148dad471"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "contact",
+           "company",
+           "deal",
+           "invoice",
+           "creditNote",
+           "subscription",
+           "product",
+           "quotation",
+           "nextgenProject"
+          ]
+         }
+        },
+        "required": [
+         "type",
+         "id"
+        ]
+       }
+      },
+      "required": [
+       "subject"
+      ]
+     },
+     "page": {
+      "type": "object",
+      "properties": {
+       "size": {
+        "type": "number"
+       },
+       "number": {
+        "type": "number"
+       }
+      }
+     }
+    },
+    "required": [
+     "filter"
+    ]
+   },
+   "example": {
+    "filter": {
+     "subject": {
+      "type": "contact",
+      "id": "36386b05-936e-4cc0-9523-bd20d797ebf5"
+     }
+    },
+    "page": {
+     "size": 20,
+     "number": 1
+    }
+   }
   },
   {
    "path": "/events.cancel",
@@ -9723,8 +9840,42 @@
    "deprecated": false,
    "destructive": false,
    "returnsContent": true,
-   "schema": null,
-   "example": null
+   "schema": {
+    "type": "object",
+    "properties": {
+     "filter": {
+      "type": "object",
+      "properties": {
+       "department_id": {
+        "type": "string",
+        "example": "a344c251-2494-0013-b433-ccee8e8435e5"
+       },
+       "type": {
+        "type": "string",
+        "enum": [
+         "invoice",
+         "quotation",
+         "work_order",
+         "credit_note"
+        ],
+        "example": "invoice"
+       }
+      },
+      "required": [
+       "type"
+      ]
+     }
+    },
+    "required": [
+     "filter"
+    ]
+   },
+   "example": {
+    "filter": {
+     "department_id": "a344c251-2494-0013-b433-ccee8e8435e5",
+     "type": "invoice"
+    }
+   }
   },
   {
    "path": "/meetings.complete",
@@ -11463,8 +11614,74 @@
    "deprecated": false,
    "destructive": false,
    "returnsContent": true,
-   "schema": null,
-   "example": null
+   "schema": {
+    "type": "object",
+    "properties": {
+     "filter": {
+      "type": "object",
+      "properties": {
+       "subject": {
+        "type": "object",
+        "properties": {
+         "id": {
+          "type": "string",
+          "example": "eab232c6-49b2-4b7e-a977-5e1148dad471"
+         },
+         "type": {
+          "type": "string",
+          "enum": [
+           "company",
+           "contact",
+           "creditNote",
+           "deal",
+           "invoice",
+           "meeting",
+           "nextgenProject",
+           "product",
+           "project",
+           "quotation",
+           "subscription"
+          ]
+         }
+        },
+        "required": [
+         "type",
+         "id"
+        ]
+       }
+      },
+      "required": [
+       "subject"
+      ]
+     },
+     "page": {
+      "type": "object",
+      "properties": {
+       "size": {
+        "type": "number"
+       },
+       "number": {
+        "type": "number"
+       }
+      }
+     }
+    },
+    "required": [
+     "filter"
+    ]
+   },
+   "example": {
+    "filter": {
+     "subject": {
+      "type": "contact",
+      "id": "36386b05-936e-4cc0-9523-bd20d797ebf5"
+     }
+    },
+    "page": {
+     "size": 20,
+     "number": 1
+    }
+   }
   },
   {
    "path": "/notes.update",
