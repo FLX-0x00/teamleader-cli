@@ -46,12 +46,25 @@ tl commands --json         # machine-readable spec of all 292 commands (for AI a
 
 ## Install
 
+Requires Node.js ≥ 18 and [pnpm](https://pnpm.io).
+
+Install directly from GitHub (no clone needed):
+
 ```sh
-pnpm install
-pnpm link --global   # makes `tl` (and `teamleader`) available everywhere
+pnpm add -g github:FLX-0x00/teamleader-cli
 ```
 
-Requires Node.js ≥ 18.
+This makes `tl` (and the `teamleader` alias) available everywhere.
+Update later with the same command.
+
+Or from source:
+
+```sh
+git clone https://github.com/FLX-0x00/teamleader-cli.git
+cd teamleader-cli
+pnpm install
+pnpm link --global
+```
 
 ## Authentication (one-time setup)
 

@@ -4,6 +4,12 @@
   "description": "Non-interactive command line client for the Teamleader Focus API",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FLX-0x00/teamleader-cli.git"
+  },
+  "homepage": "https://github.com/FLX-0x00/teamleader-cli#readme",
+  "bugs": "https://github.com/FLX-0x00/teamleader-cli/issues",
   "engines": {
     "node": ">=18.0.0"
   },
