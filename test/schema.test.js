@@ -42,11 +42,13 @@ test('integer rejects non-integers', () => {
   assert.throws(() => setPath({}, 'count', '1.5', schema), UsageError);
 });
 
-test('enum validation', () => {
+test('enum mismatch warns but sends the value (spec enums can be wrong)', () => {
   const body = {};
   setPath(body, 'status', 'open', schema);
   assert.equal(body.status, 'open');
-  assert.throws(() => setPath({}, 'status', 'bogus', schema), /must be one of/);
+  const off = {};
+  setPath(off, 'status', 'bogus', schema); // must not throw
+  assert.equal(off.status, 'bogus');
 });
 
 test('repeated flags build arrays', () => {

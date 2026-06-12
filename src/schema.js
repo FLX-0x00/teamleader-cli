@@ -8,6 +8,8 @@
  *   --custom_fields '[{"id":"...","value":"x"}]'   JSON literal for any object/array
  */
 
+import { warn } from './output.js';
+
 export class UsageError extends Error {}
 
 function looksLikeJson(value) {
@@ -23,21 +25,21 @@ function parseJsonValue(value, flag) {
   }
 }
 
-/** Walk a simplified schema along one dot-path segment. Returns node or null. */
+/** Walk a simplified schema along one dot-path segment. Returns node or null.
+ * A node may carry `properties` AND `oneOf` variants (e.g. milestones.create). */
 function childSchema(node, segment) {
   if (!node) return null;
-  if (node.oneOf) {
-    for (const variant of node.oneOf) {
-      const hit = childSchema(variant, segment);
-      if (hit) return hit;
-    }
-    return null;
-  }
   if (node.type === 'array') {
     if (/^\d+$/.test(segment)) return node.items || null;
     return null;
   }
   if (node.properties && Object.hasOwn(node.properties, segment)) return node.properties[segment];
+  if (node.oneOf) {
+    for (const variant of node.oneOf) {
+      const hit = childSchema(variant, segment);
+      if (hit) return hit;
+    }
+  }
   return null;
 }
 
@@ -60,7 +62,10 @@ function coerceScalar(value, node, flag) {
     return n;
   }
   if (node?.enum && !node.enum.includes(value)) {
-    throw new UsageError(`--${flag}: must be one of: ${node.enum.join(', ')} (got "${value}")`);
+    // warn instead of reject: the published spec is occasionally wrong about
+    // enum casing (e.g. bookkeepingSubmissions wants "incomingInvoice", the
+    // spec says "incoming_invoice") — the API itself validates authoritatively
+    warn(`warning: --${flag}: "${value}" is not in the documented values (${node.enum.join(', ')}) — sending anyway`);
   }
   return value;
 }
@@ -121,10 +126,13 @@ export function checkTopLevel(flag, schema) {
   if (!schema) {
     throw new UsageError(`this action takes no parameters (got --${flag})`);
   }
+  const known = new Set(Object.keys(schema.properties || {}));
+  for (const variant of schema.oneOf || []) {
+    for (const key of Object.keys(variant.properties || {})) known.add(key);
+  }
   const head = flag.split('.')[0];
-  if (schema.properties && !Object.hasOwn(schema.properties, head)) {
-    const known = Object.keys(schema.properties).join(', ');
-    throw new UsageError(`unknown parameter --${head} — available: ${known}`);
+  if (known.size && !known.has(head)) {
+    throw new UsageError(`unknown parameter --${head} — available: ${[...known].join(', ')}`);
   }
 }
 
@@ -149,13 +157,9 @@ function typeLabel(node) {
  */
 export function flattenParams(schema, prefix = '', requiredList = [], depth = 0, rows = []) {
   if (!schema || depth > 7) return rows;
-  if (schema.oneOf) {
-    for (const variant of schema.oneOf) flattenParams(variant, prefix, requiredList, depth, rows);
-    return rows;
-  }
-  if (!schema.properties) return rows;
-  for (const [key, node] of Object.entries(schema.properties)) {
+  for (const [key, node] of Object.entries(schema.properties || {})) {
     const flag = prefix ? `${prefix}.${key}` : key;
+    if (rows.some((r) => r.flag === flag)) continue;
     const required = requiredList.includes(key);
     const row = {
       flag,
@@ -174,6 +178,10 @@ export function flattenParams(schema, prefix = '', requiredList = [], depth = 0,
     } else if (node.type === 'array' && node.items?.enum) {
       row.enum = node.items.enum;
     }
+  }
+  // variants may add parameters on top of the node's own properties
+  for (const variant of schema.oneOf || []) {
+    flattenParams(variant, prefix, variant.required || [], depth, rows);
   }
   return rows;
 }
