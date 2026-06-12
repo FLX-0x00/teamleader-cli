@@ -10,6 +10,40 @@ parameters and types of the official API — generated from Teamleader's own
 - **Tables for humans, `--json` for machines** — raw API responses on demand.
 - **Schema-validated input** — types, enums and required fields are checked locally before any request is sent.
 
+## TL;DR — the commands you'll actually use
+
+```sh
+tl auth login                                          # one-time OAuth setup (guided)
+
+# search & find (most used)
+tl contacts list --filter.term "james"                 # search contacts (name/email/phone)
+tl companies list --filter.term "piedpiper"            # search companies
+tl deals list --filter.phase_id <uuid> --sort weighted_value:desc
+tl invoices list --filter.status booked --all          # --all = fetch every page
+
+# look at one record
+tl contacts info <uuid> --include custom_fields
+tl companies info <uuid> --json                        # raw API JSON for scripting
+
+# create & update
+tl contacts add --first_name Jane --last_name Doe --emails.0.type primary --emails.0.email jane@x.eu
+tl deals create --title "Big deal" --lead.customer.type company --lead.customer.id <uuid>
+tl deals win <uuid>
+tl tasks create --title "Follow up" --due_on 2026-07-01 --work_type_id <uuid>
+
+# invoices & files
+tl invoices download <uuid> --format pdf --output invoice.pdf
+
+# delete (safe mode: nothing is deleted without --rm)
+tl contacts delete <uuid> --rm
+
+# discovery
+tl --help                  # everything at a glance
+tl deals                   # actions of a resource
+tl deals create --help     # all parameters with types & examples
+tl commands --json         # machine-readable spec of all 292 commands (for AI agents)
+```
+
 ## Install
 
 ```sh
